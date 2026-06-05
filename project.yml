@@ -1,0 +1,45 @@
+name: FlagTimes
+options:
+  bundleIdPrefix: com.guillermorodas
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
+    PRODUCT_BUNDLE_IDENTIFIER: com.guillermorodas.flagtimes
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    GENERATE_INFOPLIST_FILE: NO
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: "-"
+    DEVELOPMENT_TEAM: ""
+    ENABLE_HARDENED_RUNTIME: YES
+    ARCHS: "$(ARCHS_STANDARD)"
+
+targets:
+  FlagTimes:
+    type: application
+    platform: macOS
+    sources:
+      - Sources
+    resources:
+      - Resources/timezone_catalog.json
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleDisplayName: Flag Times
+        CFBundleName: FlagTimes
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSMinimumSystemVersion: $(MACOSX_DEPLOYMENT_TARGET)
+        LSUIElement: true
+        NSHumanReadableCopyright: "Copyright © 2026 Guillermo Rodas"
+        NSSupportsAutomaticTermination: true
+        NSSupportsSuddenTermination: true
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: ""
+        SKIP_INSTALL: NO

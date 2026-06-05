@@ -1,0 +1,24 @@
+## Xcode
+*.xcodeproj/
+build/
+DerivedData/
+*.xcuserdata
+*.xcuserstate
+xcuserdata/
+*.xcworkspace/xcuserdata/
+
+## macOS
+.DS_Store
+
+## Swift
+.build/
+.swiftpm/
+Packages/
+Package.pins
+Package.resolved
+*.swiftmodule
+*.swiftdoc
+*.swiftsourceinfo
+
+## Misc
+*.log
