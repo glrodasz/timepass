@@ -26,7 +26,7 @@ xcodebuild -project FlagTimes.xcodeproj -scheme FlagTimes -configuration Release
 
 To install for daily use:
 
-1. Product → Archive → Distribute App → Copy App → drag into `/Applications`.
+1. Product → Archive → Distribute App → Custom → Copy App → drag into `/Applications`.
 2. First launch: right-click → Open (Gatekeeper accepts unsigned builds with explicit consent).
 
 ## Features
