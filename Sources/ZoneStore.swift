@@ -12,8 +12,21 @@ final class ZoneStore: ObservableObject {
            let stored = try? JSONDecoder().decode([String].self, from: data) {
             self.identifiers = stored
         } else {
-            self.identifiers = []
+            // Fresh install (no stored key yet): seed a sensible default so the
+            // menu bar shows a real flag + time instead of just the 🌐 globe.
+            self.identifiers = Self.defaultIdentifiers()
+            persist()
         }
+    }
+
+    private static func defaultIdentifiers() -> [String] {
+        let local = TimeZone.current.identifier
+        // Only seed if the local zone maps to a country/flag in our catalog;
+        // otherwise fall back to the empty state.
+        if TimeZoneCatalog.shared.iso(for: local) != nil {
+            return [local]
+        }
+        return []
     }
 
     func isEnabled(_ identifier: String) -> Bool {
