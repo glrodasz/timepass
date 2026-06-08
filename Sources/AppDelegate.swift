@@ -2,10 +2,6 @@ import AppKit
 import Combine
 import SwiftUI
 
-/// Drives the menu bar item with an AppKit `NSStatusItem` instead of SwiftUI's
-/// `MenuBarExtra`, which on macOS 26 spins at 100% CPU (when its label uses
-/// `TimelineView`) and is prone to the RenderBox status-item registration bug.
-/// The picker UI is still SwiftUI, hosted on demand in an `NSPopover`.
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let zones = ZoneStore()
@@ -19,20 +15,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        // Give the item a stable, explicit autosave name so its visibility/
-        // position persist under a key we control (rather than an auto-generated
-        // "Item-0" slot that can get stuck hidden/off-screen).
-        statusItem.autosaveName = "FlagTimesMenuBarItem"
-        // macOS persists status-item visibility; force it on so a previously
-        // hidden state can't keep the icon from ever appearing.
         statusItem.isVisible = true
         if let button = statusItem.button {
+            // 1x1 transparent anchor image keeps the item classified as a
+            // third-party status item (placed left of system icons on macOS 26)
+            // without occupying visible space.
+            button.image = NSImage(size: NSSize(width: 1, height: 1))
+            button.imagePosition = .imageLeading
             button.target = self
             button.action = #selector(togglePopover)
         }
 
-        // Refresh the title roughly on the minute and whenever the user's
-        // zone/format choices change.
         let timer = Timer(timeInterval: 30, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.updateTitle() }
         }
@@ -53,26 +46,32 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func updateTitle() {
         guard let button = statusItem.button else { return }
         let identifiers = zones.identifiers
-
         guard !identifiers.isEmpty else {
             button.title = "🌐"
             return
         }
-
         let opts = ClockFormatOptions(
             useAMPM: prefs.useAMPM,
             showDate: prefs.showDate,
             showDay: prefs.showDay
         )
         let now = Date()
-        let parts: [String] = identifiers.map { identifier in
+        button.title = identifiers.map { identifier -> String in
             let iso = TimeZoneCatalog.shared.iso(for: identifier) ?? ""
             let flag = FlagEmoji.from(isoCode: iso)
             let tz = TimeZone(identifier: identifier) ?? .current
-            let time = ClockFormatter.format(now, in: tz, options: opts)
-            return "\(flag) \(time)"
+            return "\(flag) \(ClockFormatter.format(now, in: tz, options: opts))"
+        }.joined(separator: "  ")
+
+        // Re-anchor an open popover after the button width changes so its
+        // arrow keeps pointing at the (now wider/narrower) status item.
+        // Deferred so AppKit has laid out the new bounds before we read them.
+        if let popover, popover.isShown {
+            DispatchQueue.main.async { [weak self] in
+                guard let self, popover.isShown, let button = self.statusItem.button else { return }
+                popover.positioningRect = button.bounds
+            }
         }
-        button.title = parts.joined(separator: "  ")
     }
 
     @objc private func togglePopover() {
@@ -87,12 +86,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Builds the popover and its SwiftUI content on first use, keeping SwiftUI
-    /// view construction out of the launch path.
     private func ensurePopover() -> NSPopover {
         if let popover { return popover }
         let popover = NSPopover()
         popover.behavior = .transient
+        popover.contentSize = NSSize(width: 320, height: 460)
         popover.contentViewController = NSHostingController(
             rootView: TimeZonePickerView()
                 .environmentObject(zones)
