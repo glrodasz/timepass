@@ -9,6 +9,9 @@ settings:
   base:
     SWIFT_VERSION: "5.9"
     MACOSX_DEPLOYMENT_TARGET: "13.0"
+    # `.dev1` suffix sidesteps a stale Control Center slot cached against the
+    # original bundle id on macOS 26. Bump (.dev2, .dev3…) if the icon vanishes
+    # again after a clean install. See README "macOS 26 notes".
     PRODUCT_BUNDLE_IDENTIFIER: com.guillermorodas.flagtimes.dev1
     MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: "1"

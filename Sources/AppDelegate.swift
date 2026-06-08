@@ -17,9 +17,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         statusItem.isVisible = true
         if let button = statusItem.button {
-            // 1x1 transparent anchor image keeps the item classified as a
-            // third-party status item (placed left of system icons on macOS 26)
-            // without occupying visible space.
+            // Empty 1×1 image anchors the item in the third-party status zone
+            // on macOS 26; title-only items get placed inside the system-icons
+            // slot and render invisibly behind battery/wifi/clock.
             button.image = NSImage(size: NSSize(width: 1, height: 1))
             button.imagePosition = .imageLeading
             button.target = self
@@ -63,9 +63,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return "\(flag) \(ClockFormatter.format(now, in: tz, options: opts))"
         }.joined(separator: "  ")
 
-        // Re-anchor an open popover after the button width changes so its
-        // arrow keeps pointing at the (now wider/narrower) status item.
-        // Deferred so AppKit has laid out the new bounds before we read them.
+        // Defer: button.bounds doesn't reflect the new title width until
+        // AppKit lays out the resized status item on the next tick.
         if let popover, popover.isShown {
             DispatchQueue.main.async { [weak self] in
                 guard let self, popover.isShown, let button = self.statusItem.button else { return }
