@@ -18,7 +18,7 @@ struct PreferencesMenuContent: View {
 
         Divider()
 
-        Button("Quit Flag Times") {
+        Button("Quit Timepass") {
             NSApplication.shared.terminate(nil)
         }
         .keyboardShortcut("q")

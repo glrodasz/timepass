@@ -1,4 +1,4 @@
-# Flag Times
+# Timepass
 
 A native Apple Silicon menu bar app that shows multiple timezones, each with its country flag and current time.
 
@@ -14,14 +14,14 @@ Replaces older non-ARM "world clock" menu bar utilities. Pure AppKit `NSStatusIt
 
 ```sh
 brew install xcodegen        # first time only
-xcodegen generate            # produces FlagTimes.xcodeproj
-open FlagTimes.xcodeproj     # ⌘R in Xcode
+xcodegen generate            # produces Timepass.xcodeproj
+open Timepass.xcodeproj      # ⌘R in Xcode
 ```
 
 Or from the command line:
 
 ```sh
-xcodebuild -project FlagTimes.xcodeproj -scheme FlagTimes -configuration Release build
+xcodebuild -project Timepass.xcodeproj -scheme Timepass -configuration Release build
 ```
 
 To install for daily use:
@@ -57,13 +57,11 @@ To install for daily use:
 
 ## macOS 26 notes
 
-Two non-obvious workarounds live in this project. Both are documented in the code next to where they're applied; this section explains the why.
+One non-obvious workaround lives in this project, documented in the code next to where it's applied; this section explains the why.
 
-1. **The status item carries an empty 1×1 image** (`AppDelegate.applicationDidFinishLaunching`). On macOS 26, title-only `NSStatusItem`s are sometimes placed inside the system-icons slot (right of the Control Center pill) instead of the third-party status zone, where they render invisibly behind battery/wifi/clock. Setting an image — even a transparent one — anchors the item in the correct zone.
+**The status item carries an empty 1×1 image** (`AppDelegate.applicationDidFinishLaunching`). On macOS 26, title-only `NSStatusItem`s are sometimes placed inside the system-icons slot (right of the Control Center pill) instead of the third-party status zone, where they render invisibly behind battery/wifi/clock. Setting an image — even a transparent one — anchors the item in the correct zone.
 
-2. **Bundle id has a `.dev1` suffix** (`project.yml`). The previous bundle id (`com.guillermorodas.flagtimes`) ended up with a stuck Control Center slot on the development Mac that kept the icon hidden even after the empty-image fix. A fresh bundle id got a fresh slot. If the icon ever vanishes again after a clean reinstall, bump to `.dev2`.
-
-If you ship the app outside this dev machine, the `.dev1` suffix can almost certainly be dropped — it's a workaround for stale local state, not a code-level issue.
+If the menu bar icon ever vanishes after a clean reinstall, a stuck Control Center slot cached against the bundle id can be the cause; adding a temporary suffix to `PRODUCT_BUNDLE_IDENTIFIER` in `project.yml` forces a fresh slot.
 
 ## Regenerating the timezone catalog
 
