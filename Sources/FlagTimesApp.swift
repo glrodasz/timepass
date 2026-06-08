@@ -2,23 +2,15 @@ import SwiftUI
 
 @main
 struct FlagTimesApp: App {
-    @StateObject private var zones = ZoneStore()
-    @StateObject private var prefs = PreferencesStore()
-    @StateObject private var loginItem = LoginItemService()
-    @StateObject private var clock = ClockTicker()
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        MenuBarExtra {
-            TimeZonePickerView()
-                .environmentObject(zones)
-                .environmentObject(prefs)
-                .environmentObject(loginItem)
-        } label: {
-            MenuBarLabel()
-                .environmentObject(zones)
-                .environmentObject(prefs)
-                .environmentObject(clock)
+        // A SwiftUI scene is required so the AppKit `NSStatusItem` (which is a
+        // scene-bound `NSSceneStatusItem` once SwiftUI is linked) has a host
+        // scene to render into. The menu bar item itself is managed by
+        // `AppDelegate`; this Settings scene is otherwise empty.
+        Settings {
+            EmptyView()
         }
-        .menuBarExtraStyle(.window)
     }
 }
