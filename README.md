@@ -1,4 +1,7 @@
-# Timepass
+<h1>
+  <img src="images/timepass.png" alt="Timepass icon" width="64" align="left" />
+  Timepass
+</h1>
 
 A native Apple Silicon menu bar app that shows multiple timezones, each with its country flag and current time.
 
