@@ -14,19 +14,29 @@ Replaces older non-ARM "world clock" menu bar utilities. Pure AppKit `NSStatusIt
 
 ```sh
 brew install xcodegen        # first time only
-xcodegen generate            # produces Timepass.xcodeproj
-open Timepass.xcodeproj      # ⌘R in Xcode
+make build                   # generate project + Release build
 ```
 
-Or from the command line:
+`make help` lists every target. Common ones:
 
 ```sh
-xcodebuild -project Timepass.xcodeproj -scheme Timepass -configuration Release build
+make generate   # regenerate Timepass.xcodeproj from project.yml
+make build      # Release build into build/DerivedData
+make install    # build, then copy Timepass.app into /Applications
+make run        # launch the installed app
+make clean      # remove build/ and Timepass.xcodeproj
+```
+
+To work in Xcode instead:
+
+```sh
+make generate
+open Timepass.xcodeproj       # ⌘R in Xcode
 ```
 
 To install for daily use:
 
-1. Product → Archive → Distribute App → Custom → Copy App → drag into `/Applications`.
+1. `make install` (copies `Timepass.app` into `/Applications`).
 2. First launch: right-click → Open (Gatekeeper accepts unsigned builds with explicit consent).
 
 ## Features
