@@ -3,6 +3,10 @@
   Timepass
 </h1>
 
+<p align="center">
+  <img src="images/app-store/timepass-cover-1440x900.png" alt="Timepass: The whole world, one glance away." width="100%" />
+</p>
+
 A native Apple Silicon menu bar app that shows multiple timezones, each with its country flag and current time.
 
 Replaces older non-ARM "world clock" menu bar utilities. Pure AppKit `NSStatusItem` for the menu bar item, SwiftUI hosted in an `NSPopover` for the picker UI. No Electron, no Chromium.
