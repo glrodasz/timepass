@@ -3,13 +3,15 @@ import Combine
 import SwiftUI
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
     let zones = ZoneStore()
     let prefs = PreferencesStore()
     let loginItem = LoginItemService()
 
     private var statusItem: NSStatusItem!
     private var popover: NSPopover?
+    private var outsideClickMonitor: Any?
+    private var dismissObservers: [NSObjectProtocol] = []
     private var timer: Timer?
     private var cancellables = Set<AnyCancellable>()
 
@@ -85,10 +87,70 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    func popoverDidShow(_ notification: Notification) {
+        installDismissObservers()
+    }
+
+    func popoverWillClose(_ notification: Notification) {
+        removeDismissObservers()
+    }
+
+    // `.transient` stops noticing outside clicks once the gear menu has run
+    // its own tracking loop, leaving the popover stuck open. Close it
+    // explicitly instead of relying on NSPopover alone.
+    private func installDismissObservers() {
+        guard outsideClickMonitor == nil else { return }
+
+        outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(
+            matching: [.leftMouseDown, .rightMouseDown, .otherMouseDown]
+        ) { [weak self] _ in
+            Task { @MainActor in self?.closePopover() }
+        }
+
+        let center = NotificationCenter.default
+        dismissObservers.append(center.addObserver(
+            forName: NSApplication.didResignActiveNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in self?.closePopover() }
+        })
+
+        // A click outside an open menu only dismisses the menu, so the click
+        // never reaches another app. If tracking ended with a button still
+        // held down outside the popover, that was such a click.
+        dismissObservers.append(center.addObserver(
+            forName: NSMenu.didEndTrackingNotification, object: nil, queue: .main
+        ) { [weak self] _ in
+            MainActor.assumeIsolated {
+                guard NSEvent.pressedMouseButtons != 0, let self else { return }
+                let location = NSEvent.mouseLocation
+                let insideApp = [
+                    self.popover?.contentViewController?.view.window,
+                    self.statusItem.button?.window,
+                ].contains { $0?.frame.contains(location) == true }
+                if !insideApp { self.closePopover() }
+            }
+        })
+    }
+
+    private func removeDismissObservers() {
+        if let outsideClickMonitor {
+            NSEvent.removeMonitor(outsideClickMonitor)
+            self.outsideClickMonitor = nil
+        }
+        dismissObservers.forEach { NotificationCenter.default.removeObserver($0) }
+        dismissObservers.removeAll()
+    }
+
+    private func closePopover() {
+        guard let popover, popover.isShown else { return }
+        popover.performClose(nil)
+    }
+
     private func ensurePopover() -> NSPopover {
         if let popover { return popover }
         let popover = NSPopover()
         popover.behavior = .transient
+        popover.delegate = self
         popover.contentSize = NSSize(width: 320, height: 460)
         popover.contentViewController = NSHostingController(
             rootView: TimeZonePickerView()
