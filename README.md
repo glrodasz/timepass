@@ -9,6 +9,8 @@
 
 A native Apple Silicon menu bar app that shows multiple timezones, each with its country flag and current time.
 
+**Website:** [timepass.guillermorodas.com](https://timepass.guillermorodas.com/)
+
 Replaces older non-ARM "world clock" menu bar utilities. Pure AppKit `NSStatusItem` for the menu bar item, SwiftUI hosted in an `NSPopover` for the picker UI. No Electron, no Chromium.
 
 ## Requirements
@@ -79,6 +81,10 @@ One non-obvious workaround lives in this project, documented in the code next to
 **The status item carries an empty 1×1 image** (`AppDelegate.applicationDidFinishLaunching`). On macOS 26, title-only `NSStatusItem`s are sometimes placed inside the system-icons slot (right of the Control Center pill) instead of the third-party status zone, where they render invisibly behind battery/wifi/clock. Setting an image — even a transparent one — anchors the item in the correct zone.
 
 If the menu bar icon ever vanishes after a clean reinstall, a stuck Control Center slot cached against the bundle id can be the cause; adding a temporary suffix to `PRODUCT_BUNDLE_IDENTIFIER` in `project.yml` forces a fresh slot.
+
+## Landing page
+
+The project website is a single static page in `docs/` (no build step). Preview it locally with `python3 -m http.server -d docs`, and publish it via **Settings → Pages → Deploy from a branch → `main` / `/docs`**. The custom domain `timepass.guillermorodas.com` is set by `docs/CNAME` and needs a DNS `CNAME` record `timepass` → `glrodasz.github.io`.
 
 ## Regenerating the timezone catalog
 
