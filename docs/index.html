@@ -3,20 +3,46 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Timepass — Menu bar world clock for macOS</title>
+  <title>Timepass — Free, native menu bar world clock for macOS</title>
   <meta name="description" content="Timepass is a native Apple Silicon menu bar app that shows every timezone you care about, each with its country flag and local time." />
+  <link rel="canonical" href="https://timepass.guillermorodas.com/" />
   <meta name="theme-color" content="#1a130d" />
   <meta name="color-scheme" content="dark" />
-  <link rel="icon" type="image/png" href="assets/timepass.png" />
-  <link rel="apple-touch-icon" href="assets/timepass.png" />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <link rel="manifest" href="site.webmanifest" />
 
   <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Timepass" />
   <meta property="og:title" content="Timepass — The whole world, one glance away." />
   <meta property="og:description" content="A native Apple Silicon menu bar world clock with flags, search and start at login." />
-  <meta property="og:image" content="https://timepass.guillermorodas.com/assets/og-cover.png" />
+  <meta property="og:image" content="https://timepass.guillermorodas.com/assets/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="The Timepass compass-clock app icon beside the tagline: The whole world, one glance away." />
   <meta property="og:url" content="https://timepass.guillermorodas.com/" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:image" content="https://timepass.guillermorodas.com/assets/og-cover.png" />
+  <meta name="twitter:title" content="Timepass — The whole world, one glance away." />
+  <meta name="twitter:description" content="A native Apple Silicon menu bar world clock with flags, search and start at login." />
+  <meta name="twitter:image" content="https://timepass.guillermorodas.com/assets/og-image.png" />
+  <meta name="twitter:image:alt" content="The Timepass compass-clock app icon beside the tagline: The whole world, one glance away." />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Timepass",
+    "description": "A native Apple Silicon menu bar world clock for macOS that shows every timezone you care about, each with its country flag and local time.",
+    "url": "https://timepass.guillermorodas.com/",
+    "image": "https://timepass.guillermorodas.com/assets/og-image.png",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "macOS 13.0 or later",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Guillermo Rodas" },
+    "sameAs": "https://github.com/glrodasz/timepass"
+  }
+  </script>
 
   <style>
     :root {
@@ -69,21 +95,33 @@
     }
 
     a { color: var(--gold-400); }
-    a:focus-visible, button:focus-visible {
-      outline: 2px solid var(--gold-400);
-      outline-offset: 3px;
-      border-radius: 6px;
+    /* Focus ring: gold on the espresso/leather surfaces (10:1); .parchment re-points it to oxblood (≥5.8:1). */
+    :root {
+      --focus-ring-color: var(--gold-400);
+      --focus-ring-width: 2px;
+      --focus-ring-offset: 3px;
     }
+    :focus-visible {
+      outline: var(--focus-ring-width) solid var(--focus-ring-color);
+      outline-offset: var(--focus-ring-offset);
+    }
+    /* Programmatic focus targets (the skip-link destination) aren't interactive. */
+    [tabindex="-1"]:focus { outline: none; }
     img { max-width: 100%; display: block; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
 
     .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
     @media (max-width: 600px) { .wrap { padding: 0 16px; } }
 
     .skip {
-      position: absolute; left: -999px; top: 8px; z-index: 100;
+      position: absolute; left: 8px; top: 8px; z-index: 100;
+      transform: translateY(-200%);
       background: var(--gold-500); color: var(--ink-900); padding: 8px 14px; border-radius: 8px;
     }
-    .skip:focus { left: 8px; }
+    .skip:focus-visible { transform: none; }
 
     /* ---------- Faux macOS menu bar ---------- */
     .menubar {
@@ -102,6 +140,7 @@
     .menubar__brand {
       display: flex; align-items: center; gap: 8px;
       font-weight: 600; letter-spacing: 0.01em; text-decoration: none; color: inherit;
+      min-height: 34px; padding: 0 8px; margin-left: -8px;
     }
     .menubar__brand img { width: 18px; height: 18px; }
     .menubar__zones { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; overflow: hidden; }
@@ -117,7 +156,10 @@
     .flag { font-size: 14px; line-height: 1; }
     @media (max-width: 860px) { .menubar__zones li:nth-child(n+4) { display: none; } }
     @media (max-width: 520px) {
-      .menubar__brand span { display: none; }
+      .menubar__brand span {
+        position: absolute; width: 1px; height: 1px; margin: -1px;
+        overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+      }
       .menubar__zones li:nth-child(n+3) { display: none; }
     }
 
@@ -363,6 +405,7 @@
 
     /* ---------- Install (parchment ledger) ---------- */
     .parchment {
+      --focus-ring-color: #7a1d16;
       position: relative;
       color: var(--ink-900);
       border-radius: 6px;
@@ -402,6 +445,7 @@
     }
     .steps p { margin: 0 0 8px; color: var(--ink-700); font-size: 15.5px; }
     .code {
+      --focus-ring-color: var(--gold-400);
       position: relative;
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
       font-family: var(--mono); font-size: 14.5px;
@@ -414,6 +458,7 @@
     .code code { flex: 1; min-width: 0; overflow-x: auto; white-space: pre; scrollbar-width: thin; }
     .code code::before { content: "$ "; color: var(--gold-700); }
     .copy {
+      position: relative;
       flex: none;
       font: 600 12px/1 var(--sans); letter-spacing: 0.04em;
       color: var(--gold-300); cursor: pointer;
@@ -422,6 +467,8 @@
       background: rgba(255,240,210,0.05);
     }
     .copy:hover { border-color: rgba(217,189,132,0.7); }
+    /* Grow the tap area to 44px tall without changing the button's look. */
+    .copy::after { content: ""; position: absolute; inset: -9px -7px; }
     .requirements {
       align-self: start;
       padding: 24px 26px;
@@ -454,7 +501,7 @@
     .footer__brand { display: flex; align-items: center; gap: 12px; font-family: var(--serif); font-size: 22px; color: var(--parchment-100); }
     .footer__brand img { width: 36px; height: 36px; }
     footer nav { display: flex; gap: 22px; }
-    footer nav a { color: var(--text-muted); text-decoration: none; }
+    footer nav a { color: var(--text-muted); text-decoration: none; display: inline-block; padding: 11px 0; }
     footer nav a:hover { color: var(--gold-300); }
   </style>
 </head>
@@ -466,16 +513,16 @@
       <img src="assets/timepass.png" alt="" width="18" height="18" />
       <span>Timepass</span>
     </a>
-    <ul class="menubar__zones" data-clocks aria-live="off">
-      <li data-tz="America/New_York"><span class="flag" aria-hidden="true">🇺🇸</span><time>9:41 AM</time></li>
-      <li data-tz="Europe/London" class="is-active"><span class="flag" aria-hidden="true">🇬🇧</span><time>2:41 PM</time></li>
-      <li data-tz="America/Bogota"><span class="flag" aria-hidden="true">🇨🇴</span><time>8:41 AM</time></li>
-      <li data-tz="Asia/Tokyo"><span class="flag" aria-hidden="true">🇯🇵</span><time>10:41 PM</time></li>
-      <li data-tz="Australia/Sydney"><span class="flag" aria-hidden="true">🇦🇺</span><time>12:41 AM</time></li>
+    <ul class="menubar__zones" data-clocks>
+      <li data-tz="America/New_York"><span class="flag" aria-hidden="true">🇺🇸</span><span class="sr-only">New York</span><time>9:41 AM</time></li>
+      <li data-tz="Europe/London" class="is-active"><span class="flag" aria-hidden="true">🇬🇧</span><span class="sr-only">London</span><time>2:41 PM</time></li>
+      <li data-tz="America/Bogota"><span class="flag" aria-hidden="true">🇨🇴</span><span class="sr-only">Bogotá</span><time>8:41 AM</time></li>
+      <li data-tz="Asia/Tokyo"><span class="flag" aria-hidden="true">🇯🇵</span><span class="sr-only">Tokyo</span><time>10:41 PM</time></li>
+      <li data-tz="Australia/Sydney"><span class="flag" aria-hidden="true">🇦🇺</span><span class="sr-only">Sydney</span><time>12:41 AM</time></li>
     </ul>
   </header>
 
-  <main id="main">
+  <main id="main" tabindex="-1">
     <!-- Hero -->
     <section class="hero" id="top">
       <div class="wrap hero__grid">
@@ -593,23 +640,24 @@
               <li>
                 <div>
                   <p>Clone the repository.</p>
-                  <div class="code"><code>git clone https://github.com/glrodasz/timepass.git &amp;&amp; cd timepass</code><button class="copy" type="button">Copy</button></div>
+                  <div class="code"><code>git clone https://github.com/glrodasz/timepass.git &amp;&amp; cd timepass</code><button class="copy" type="button" aria-label="Copy clone command">Copy</button></div>
                 </div>
               </li>
               <li>
                 <div>
                   <p>Install XcodeGen (first time only).</p>
-                  <div class="code"><code>brew install xcodegen</code><button class="copy" type="button">Copy</button></div>
+                  <div class="code"><code>brew install xcodegen</code><button class="copy" type="button" aria-label="Copy XcodeGen install command">Copy</button></div>
                 </div>
               </li>
               <li>
                 <div>
                   <p>Build and copy <em>Timepass.app</em> into <em>/Applications</em>, then launch it.</p>
-                  <div class="code"><code>make install &amp;&amp; make run</code><button class="copy" type="button">Copy</button></div>
+                  <div class="code"><code>make install &amp;&amp; make run</code><button class="copy" type="button" aria-label="Copy build command">Copy</button></div>
                 </div>
               </li>
             </ol>
-            <aside class="requirements" aria-label="Requirements">
+            <p class="sr-only" role="status" data-copy-status></p>
+            <div class="requirements">
               <h3>Requirements</h3>
               <ul>
                 <li>macOS 13.0 (Ventura) or later</li>
@@ -617,7 +665,7 @@
                 <li><a href="https://github.com/yonaskolb/XcodeGen">XcodeGen</a> via Homebrew</li>
                 <li>First launch: right-click the app and choose <strong>Open</strong> to approve the unsigned build.</li>
               </ul>
-            </aside>
+            </div>
           </div>
           <div class="install__cta">
             <a class="btn btn--brass" href="https://github.com/glrodasz/timepass">View the code on GitHub</a>
@@ -657,16 +705,28 @@
       tick();
       setTimeout(function () { tick(); setInterval(tick, 30000); }, (60 - new Date().getSeconds()) * 1000);
 
+      var status = document.querySelector("[data-copy-status]");
       document.querySelectorAll(".copy").forEach(function (btn) {
         btn.addEventListener("click", function () {
           var text = btn.parentElement.querySelector("code").textContent;
           if (!navigator.clipboard) return;
           navigator.clipboard.writeText(text).then(function () {
             btn.textContent = "Copied";
-            setTimeout(function () { btn.textContent = "Copy"; }, 1600);
+            status.textContent = "Copied to clipboard";
+            setTimeout(function () { btn.textContent = "Copy"; status.textContent = ""; }, 1600);
           });
         });
       });
+
+      var codes = document.querySelectorAll(".code code");
+      function syncScrollable() {
+        codes.forEach(function (c) {
+          if (c.scrollWidth > c.clientWidth) c.setAttribute("tabindex", "0");
+          else c.removeAttribute("tabindex");
+        });
+      }
+      syncScrollable();
+      window.addEventListener("resize", syncScrollable);
     })();
   </script>
 </body>
