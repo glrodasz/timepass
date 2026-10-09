@@ -151,13 +151,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSPopoverDelegate {
         let popover = NSPopover()
         popover.behavior = .transient
         popover.delegate = self
-        popover.contentSize = NSSize(width: 320, height: 460)
-        popover.contentViewController = NSHostingController(
+        let hosting = NSHostingController(
             rootView: TimeZonePickerView()
                 .environmentObject(zones)
                 .environmentObject(prefs)
                 .environmentObject(loginItem)
         )
+        // Size the popover from the SwiftUI layout instead of a hard-coded height.
+        hosting.sizingOptions = .preferredContentSize
+        popover.contentViewController = hosting
         self.popover = popover
         return popover
     }
