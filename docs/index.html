@@ -253,9 +253,15 @@
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
       padding: 7px 10px;
     }
-    .picker__note { margin: 0; font-size: 11.5px; color: #a9a196; line-height: 1.25; }
-    .picker__note a { color: var(--gold-400); }
-    .picker__note.is-warn { color: #f0c27a; }
+    .picker__tag {
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; line-height: 1.4;
+      color: #a9a196;
+      background: rgba(255,255,255,0.06);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+      transition: color .2s ease, box-shadow .2s ease;
+    }
+    .picker__tag.is-nudged { color: #f0c27a; box-shadow: inset 0 0 0 1px rgba(240,194,122,0.5); }
     .picker__scope {
       flex: none; display: flex; padding: 2px; border-radius: 7px;
       background: rgba(255,255,255,0.08);
@@ -266,7 +272,7 @@
     }
     .picker__scope button[aria-pressed="true"] { background: var(--picker-accent); color: #fff; }
     @media (prefers-reduced-motion: reduce) {
-      .picker__switch, .picker__switch::after, .picker__chevron { transition: none; }
+      .picker__switch, .picker__switch::after, .picker__chevron, .picker__tag { transition: none; }
     }
 
     .try-hint { margin: 18px 0 0; font-size: 14.5px; color: var(--text-muted); font-style: italic; font-family: var(--serif); }
@@ -644,7 +650,8 @@
       </div>
       <div class="picker__list" data-picker-list></div>
       <div class="picker__footer">
-        <p class="picker__note" data-picker-note aria-live="polite"></p>
+        <span class="picker__tag" data-picker-tag>Demo</span>
+        <p class="sr-only" role="status" data-picker-status></p>
         <div class="picker__scope" role="group" aria-label="Show">
           <button type="button" aria-pressed="true" data-scope="all">All</button>
           <button type="button" aria-pressed="false" data-scope="enabled">Enabled</button>
@@ -880,14 +887,15 @@
       var enabled = INITIAL.slice();
       var scope = "all";
       var expandedISO = null;
-      var limitFlash = false;
+      var nudgeTimer;
 
       var bar = document.querySelector("[data-menubar]");
       var toggle = document.querySelector(".menubar__toggle");
       var picker = document.getElementById("picker");
       var query = document.getElementById("picker-query");
       var list = document.querySelector("[data-picker-list]");
-      var note = document.querySelector("[data-picker-note]");
+      var tag = document.querySelector("[data-picker-tag]");
+      var pickerStatus = picker.querySelector("[data-picker-status]");
       var scopeButtons = picker.querySelectorAll("[data-scope]");
 
       function el(tag, cls, text) {
@@ -924,10 +932,8 @@
       function toggleZone(tz) {
         if (isOn(tz)) {
           enabled.splice(enabled.indexOf(tz), 1);
-          limitFlash = false;
         } else if (atLimit()) {
-          limitFlash = true;
-          renderNote();
+          nudgeLimit();
           return;
         } else {
           enabled.push(tz);
@@ -941,7 +947,10 @@
         row.type = "button";
         row.setAttribute("role", "switch");
         row.setAttribute("aria-checked", String(isOn(tz)));
-        if (!isOn(tz) && atLimit()) row.setAttribute("aria-disabled", "true");
+        if (!isOn(tz) && atLimit()) {
+          row.setAttribute("aria-disabled", "true");
+          row.title = "Demo limit reached";
+        }
         row.dataset.toggle = tz;
         return row;
       }
@@ -1008,23 +1017,16 @@
           var again = list.querySelector('[data-toggle="' + focusedKey + '"], [data-expand="' + focusedKey + '"]');
           if (again) again.focus();
         }
-        renderNote();
       }
 
-      function renderNote() {
-        note.textContent = "";
-        note.classList.toggle("is-warn", limitFlash && atLimit());
-        if (atLimit()) {
-          note.append("Demo limit reached. ");
-          var a = el("a", null, "Get the app");
-          a.href = "#install";
-          a.addEventListener("click", function () { closePicker(false); });
-          note.appendChild(a);
-          note.append(" for unlimited.");
-        } else {
-          var left = MAX_ZONES - enabled.length;
-          note.textContent = "Demo: add up to " + left + " more.";
-        }
+      function nudgeLimit() {
+        tag.classList.add("is-nudged");
+        pickerStatus.textContent = "Demo limit reached. Remove a zone to add another.";
+        clearTimeout(nudgeTimer);
+        nudgeTimer = setTimeout(function () {
+          tag.classList.remove("is-nudged");
+          pickerStatus.textContent = "";
+        }, 1600);
       }
 
       function placeArrow() {
@@ -1046,7 +1048,6 @@
         if (picker.hidden) return;
         picker.hidden = true;
         toggle.setAttribute("aria-expanded", "false");
-        limitFlash = false;
         if (restoreFocus) toggle.focus();
       }
 
