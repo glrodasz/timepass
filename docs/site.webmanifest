@@ -1,0 +1,13 @@
+{
+  "name": "Timepass",
+  "short_name": "Timepass",
+  "description": "A native menu bar world clock for macOS.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a130d",
+  "theme_color": "#1a130d",
+  "icons": [
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/timepass.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
