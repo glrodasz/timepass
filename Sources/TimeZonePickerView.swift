@@ -151,14 +151,16 @@ struct TimeZonePickerView: View {
             zones.toggle(identifier)
         } label: {
             HStack {
+                // Accent-colored text washes out on the translucent popover;
+                // selection reads through weight and the checkmark instead.
                 Text("\(pretty) (\(time))")
-                    .foregroundStyle(zones.isEnabled(identifier) ? Color.accentColor : .secondary)
-                    .font(.system(size: 12))
+                    .foregroundStyle(zones.isEnabled(identifier) ? .primary : .secondary)
+                    .font(.system(size: 12, weight: zones.isEnabled(identifier) ? .semibold : .regular))
                 Spacer()
                 if zones.isEnabled(identifier) {
                     Image(systemName: "checkmark")
                         .foregroundStyle(Color.accentColor)
-                        .font(.caption)
+                        .font(.caption.weight(.bold))
                 }
             }
             .padding(.leading, 36)
