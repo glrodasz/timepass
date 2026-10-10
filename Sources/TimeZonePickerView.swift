@@ -7,6 +7,10 @@ enum PickerScope: String, CaseIterable, Identifiable {
 }
 
 struct TimeZonePickerView: View {
+    // Country rows measure ~31pt (16pt flag + 6pt vertical padding each side).
+    private static let rowHeight: CGFloat = 31
+    private static let visibleRows: CGFloat = 5
+
     @EnvironmentObject var zones: ZoneStore
     @EnvironmentObject var prefs: PreferencesStore
 
@@ -44,7 +48,7 @@ struct TimeZonePickerView: View {
                 .padding(.horizontal, 10)
                 .padding(.vertical, 6)
         }
-        .frame(width: 320, height: 460)
+        .frame(width: 320)
     }
 
     private var searchField: some View {
@@ -89,6 +93,7 @@ struct TimeZonePickerView: View {
             }
             .padding(.vertical, 4)
         }
+        .frame(height: Self.rowHeight * Self.visibleRows + 8)
     }
 
     @ViewBuilder

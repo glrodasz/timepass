@@ -143,24 +143,142 @@
       min-height: 34px; padding: 0 8px; margin-left: -8px;
     }
     .menubar__brand img { width: 18px; height: 18px; }
-    .menubar__zones { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; overflow: hidden; }
-    .menubar__zones li {
-      display: flex; align-items: center; gap: 6px;
-      padding: 3px 9px; border-radius: 6px; white-space: nowrap;
-      font-variant-numeric: tabular-nums;
+    .menubar__toggle {
+      display: flex; align-items: center;
+      font: inherit; color: inherit; cursor: pointer;
+      min-height: 28px; padding: 0 4px; margin-right: -4px;
+      border: 0; border-radius: 6px; background: none;
+      min-width: 0;
     }
-    .menubar__zones li.is-active {
+    .menubar__toggle:hover,
+    .menubar__toggle[aria-expanded="true"] {
       background: linear-gradient(180deg, rgba(201,168,106,0.22), rgba(201,168,106,0.12));
       box-shadow: inset 0 0 0 1px rgba(217,189,132,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
     }
+    .menubar__zones { display: flex; gap: 4px; overflow: hidden; }
+    .menubar__zones > span {
+      display: flex; align-items: center; gap: 6px;
+      padding: 3px 7px; white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
     .flag { font-size: 14px; line-height: 1; }
-    @media (max-width: 860px) { .menubar__zones li:nth-child(n+4) { display: none; } }
+    @media (max-width: 860px) { .menubar__zones > span:nth-child(n+4) { display: none; } }
     @media (max-width: 520px) {
       .menubar__brand span {
         position: absolute; width: 1px; height: 1px; margin: -1px;
         overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
       }
-      .menubar__zones li:nth-child(n+3) { display: none; }
+      .menubar__zones > span:nth-child(n+3) { display: none; }
+    }
+
+    /* ---------- Picker demo (mirrors the app's popover) ---------- */
+    .picker {
+      --picker-accent: #0a84ff;
+      --picker-row: 34px;
+      position: absolute; top: 40px; right: 12px;
+      width: min(320px, calc(100vw - 24px));
+      display: flex; flex-direction: column;
+      border-radius: 12px;
+      color: #ece6dc; font-size: 13px; line-height: 1.3;
+      background: rgba(44, 40, 37, 0.97);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      backdrop-filter: blur(20px) saturate(150%);
+      border: 1px solid rgba(255, 245, 225, 0.12);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.55), 0 18px 48px rgba(0,0,0,0.55);
+    }
+    .picker[hidden] { display: none; }
+    .picker::before {
+      content: ""; position: absolute; top: -7px; left: var(--arrow-x, 50%);
+      width: 12px; height: 12px; margin-left: -6px;
+      background: rgba(44, 40, 37, 0.97);
+      border-left: 1px solid rgba(255, 245, 225, 0.12);
+      border-top: 1px solid rgba(255, 245, 225, 0.12);
+      transform: rotate(45deg);
+    }
+    .picker__search {
+      display: flex; align-items: center; gap: 6px;
+      margin: 10px 10px 6px; padding: 6px 8px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.28);
+      box-shadow: inset 0 0 0 1.5px rgba(10,132,255,0.6);
+      color: #a9a196;
+    }
+    .picker__search svg { width: 15px; height: 15px; flex: none; }
+    .picker__search input {
+      flex: 1; min-width: 0;
+      font: inherit; font-size: 14px; color: #f2ede4;
+      border: 0; background: none; padding: 2px 0;
+    }
+    .picker__search input:focus { outline: none; }
+    .picker__search:focus-within { box-shadow: inset 0 0 0 2px var(--picker-accent); }
+    .picker__list {
+      height: calc(var(--picker-row) * 5 + 8px);
+      overflow-y: auto; overscroll-behavior: contain;
+      padding: 4px 0;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      scrollbar-width: thin;
+    }
+    .picker__row {
+      display: flex; align-items: center; gap: 8px; width: 100%;
+      min-height: var(--picker-row); padding: 0 12px;
+      font: inherit; font-size: 13.5px; color: inherit; text-align: left;
+      border: 0; background: none; cursor: pointer;
+    }
+    .picker__row:hover { background: rgba(255,255,255,0.06); }
+    .picker__row:focus-visible { outline-offset: -2px; }
+    .picker__row .flag { font-size: 16px; }
+    .picker__row .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .picker__row[aria-disabled="true"] { cursor: not-allowed; opacity: 0.5; }
+    .picker__switch {
+      flex: none; position: relative; width: 26px; height: 15px; border-radius: 999px;
+      background: rgba(255,255,255,0.18); transition: background .15s ease;
+    }
+    .picker__switch::after {
+      content: ""; position: absolute; top: 1.5px; left: 1.5px;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: #f4f1ec; box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+      transition: transform .15s ease;
+    }
+    [aria-checked="true"] > .picker__switch { background: var(--picker-accent); }
+    [aria-checked="true"] > .picker__switch::after { transform: translateX(11px); }
+    .picker__chevron { flex: none; width: 10px; color: #a9a196; transition: transform .15s ease; }
+    [aria-expanded="true"] > .picker__chevron { transform: rotate(90deg); }
+    .picker__row--zone { padding-left: 36px; font-size: 12.5px; color: #a9a196; min-height: 28px; }
+    .picker__row--zone[aria-checked="true"] { color: var(--picker-accent); }
+    .picker__check { flex: none; width: 12px; visibility: hidden; }
+    .picker__row--zone[aria-checked="true"] .picker__check { visibility: visible; }
+    .picker__empty { margin: 0; padding: 14px 12px; color: #a9a196; }
+    .picker__footer {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 7px 10px;
+    }
+    .picker__tag {
+      padding: 2px 8px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; line-height: 1.4;
+      color: #a9a196;
+      background: rgba(255,255,255,0.06);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1);
+      transition: color .2s ease, box-shadow .2s ease;
+    }
+    .picker__tag.is-nudged { color: #f0c27a; box-shadow: inset 0 0 0 1px rgba(240,194,122,0.5); }
+    .picker__scope {
+      flex: none; display: flex; padding: 2px; border-radius: 7px;
+      background: rgba(255,255,255,0.08);
+    }
+    .picker__scope button {
+      font: inherit; font-size: 12.5px; color: #d8d1c6; cursor: pointer;
+      min-width: 62px; padding: 3px 10px; border: 0; border-radius: 5px; background: none;
+    }
+    .picker__scope button[aria-pressed="true"] { background: var(--picker-accent); color: #fff; }
+    @media (prefers-reduced-motion: reduce) {
+      .picker__switch, .picker__switch::after, .picker__chevron, .picker__tag { transition: none; }
+    }
+
+    .try-hint { margin: 18px 0 0; font-size: 14.5px; color: var(--text-muted); font-style: italic; font-family: var(--serif); }
+    .try-hint button {
+      font: inherit; color: var(--gold-400); cursor: pointer;
+      padding: 0; border: 0; background: none; text-decoration: underline; text-underline-offset: 3px;
     }
 
     /* ---------- Shared type ---------- */
@@ -513,13 +631,33 @@
       <img src="assets/timepass.png" alt="" width="18" height="18" />
       <span>Timepass</span>
     </a>
-    <ul class="menubar__zones" data-clocks>
-      <li data-tz="America/New_York"><span class="flag" aria-hidden="true">🇺🇸</span><span class="sr-only">New York</span><time>9:41 AM</time></li>
-      <li data-tz="Europe/London" class="is-active"><span class="flag" aria-hidden="true">🇬🇧</span><span class="sr-only">London</span><time>2:41 PM</time></li>
-      <li data-tz="America/Bogota"><span class="flag" aria-hidden="true">🇨🇴</span><span class="sr-only">Bogotá</span><time>8:41 AM</time></li>
-      <li data-tz="Asia/Tokyo"><span class="flag" aria-hidden="true">🇯🇵</span><span class="sr-only">Tokyo</span><time>10:41 PM</time></li>
-      <li data-tz="Australia/Sydney"><span class="flag" aria-hidden="true">🇦🇺</span><span class="sr-only">Sydney</span><time>12:41 AM</time></li>
-    </ul>
+    <button class="menubar__toggle" type="button" aria-expanded="false" aria-controls="picker" aria-haspopup="dialog">
+      <span class="sr-only">Try the time zone picker. Current clocks: </span>
+      <span class="menubar__zones" data-clocks data-menubar>
+        <span data-tz="America/New_York"><span class="flag" aria-hidden="true">🇺🇸</span><span class="sr-only">New York </span><time>9:41 AM</time></span>
+        <span data-tz="Europe/London"><span class="flag" aria-hidden="true">🇬🇧</span><span class="sr-only">London </span><time>2:41 PM</time></span>
+        <span data-tz="America/Bogota"><span class="flag" aria-hidden="true">🇨🇴</span><span class="sr-only">Bogotá </span><time>8:41 AM</time></span>
+        <span data-tz="Asia/Tokyo"><span class="flag" aria-hidden="true">🇯🇵</span><span class="sr-only">Tokyo </span><time>10:41 PM</time></span>
+        <span data-tz="Australia/Sydney"><span class="flag" aria-hidden="true">🇦🇺</span><span class="sr-only">Sydney </span><time>12:41 AM</time></span>
+      </span>
+    </button>
+
+    <div class="picker" id="picker" role="dialog" aria-label="Time zone picker demo" hidden>
+      <div class="picker__search">
+        <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.6"/><path d="M10.5 10.5l3.5 3.5"/></svg>
+        <label class="sr-only" for="picker-query">Search countries or cities</label>
+        <input id="picker-query" type="search" placeholder="Search" autocomplete="off" spellcheck="false" />
+      </div>
+      <div class="picker__list" data-picker-list></div>
+      <div class="picker__footer">
+        <span class="picker__tag" data-picker-tag>Demo</span>
+        <p class="sr-only" role="status" data-picker-status></p>
+        <div class="picker__scope" role="group" aria-label="Show">
+          <button type="button" aria-pressed="true" data-scope="all">All</button>
+          <button type="button" aria-pressed="false" data-scope="enabled">Enabled</button>
+        </div>
+      </div>
+    </div>
   </header>
 
   <main id="main" tabindex="-1">
@@ -548,6 +686,7 @@
             <li>Searchable timezones</li>
             <li>Starts at login</li>
           </ul>
+          <p class="try-hint">Try it: <button type="button" data-open-picker>click the clocks in the bar above</button> to add or remove a time zone.</p>
         </div>
       </div>
     </section>
@@ -702,6 +841,260 @@
           try { t.textContent = formatter(el.dataset.tz).format(now); } catch (e) {}
         });
       }
+
+      // ---------- Picker demo: same flow as the app, capped at two extra zones ----------
+      var CATALOG = [
+        { iso: "AR", name: "Argentina", zones: [["America/Argentina/Buenos_Aires", "Buenos Aires"]] },
+        { iso: "AU", name: "Australia", zones: [["Australia/Sydney", "Sydney"], ["Australia/Melbourne", "Melbourne"], ["Australia/Perth", "Perth"]] },
+        { iso: "BR", name: "Brazil", zones: [["America/Sao_Paulo", "São Paulo"], ["America/Manaus", "Manaus"]] },
+        { iso: "CA", name: "Canada", zones: [["America/Toronto", "Toronto"], ["America/Vancouver", "Vancouver"]] },
+        { iso: "CL", name: "Chile", zones: [["America/Santiago", "Santiago"]] },
+        { iso: "CN", name: "China", zones: [["Asia/Shanghai", "Shanghai"]] },
+        { iso: "CO", name: "Colombia", zones: [["America/Bogota", "Bogotá"]] },
+        { iso: "EG", name: "Egypt", zones: [["Africa/Cairo", "Cairo"]] },
+        { iso: "FR", name: "France", zones: [["Europe/Paris", "Paris"]] },
+        { iso: "DE", name: "Germany", zones: [["Europe/Berlin", "Berlin"]] },
+        { iso: "IN", name: "India", zones: [["Asia/Kolkata", "Kolkata"]] },
+        { iso: "IE", name: "Ireland", zones: [["Europe/Dublin", "Dublin"]] },
+        { iso: "IT", name: "Italy", zones: [["Europe/Rome", "Rome"]] },
+        { iso: "JP", name: "Japan", zones: [["Asia/Tokyo", "Tokyo"]] },
+        { iso: "KE", name: "Kenya", zones: [["Africa/Nairobi", "Nairobi"]] },
+        { iso: "MX", name: "Mexico", zones: [["America/Mexico_City", "Mexico City"], ["America/Tijuana", "Tijuana"]] },
+        { iso: "NL", name: "Netherlands", zones: [["Europe/Amsterdam", "Amsterdam"]] },
+        { iso: "NZ", name: "New Zealand", zones: [["Pacific/Auckland", "Auckland"]] },
+        { iso: "NG", name: "Nigeria", zones: [["Africa/Lagos", "Lagos"]] },
+        { iso: "PE", name: "Peru", zones: [["America/Lima", "Lima"]] },
+        { iso: "PT", name: "Portugal", zones: [["Europe/Lisbon", "Lisbon"]] },
+        { iso: "SG", name: "Singapore", zones: [["Asia/Singapore", "Singapore"]] },
+        { iso: "ZA", name: "South Africa", zones: [["Africa/Johannesburg", "Johannesburg"]] },
+        { iso: "KR", name: "South Korea", zones: [["Asia/Seoul", "Seoul"]] },
+        { iso: "ES", name: "Spain", zones: [["Europe/Madrid", "Madrid"]] },
+        { iso: "SE", name: "Sweden", zones: [["Europe/Stockholm", "Stockholm"]] },
+        { iso: "CH", name: "Switzerland", zones: [["Europe/Zurich", "Zurich"]] },
+        { iso: "AE", name: "United Arab Emirates", zones: [["Asia/Dubai", "Dubai"]] },
+        { iso: "GB", name: "United Kingdom", zones: [["Europe/London", "London"]] },
+        { iso: "US", name: "United States", zones: [["America/New_York", "New York"], ["America/Chicago", "Chicago"], ["America/Denver", "Denver"], ["America/Los_Angeles", "Los Angeles"]] }
+      ];
+      var INITIAL = ["America/New_York", "Europe/London", "America/Bogota", "Asia/Tokyo", "Australia/Sydney"];
+      var MAX_ZONES = INITIAL.length + 2;
+
+      var zoneInfo = {};
+      CATALOG.forEach(function (c) {
+        c.flag = String.fromCodePoint.apply(null, c.iso.split("").map(function (ch) { return 0x1F1E6 + ch.charCodeAt(0) - 65; }));
+        c.zones.forEach(function (z) { zoneInfo[z[0]] = { flag: c.flag, label: z[1] }; });
+      });
+
+      var enabled = INITIAL.slice();
+      var scope = "all";
+      var expandedISO = null;
+      var nudgeTimer;
+
+      var bar = document.querySelector("[data-menubar]");
+      var toggle = document.querySelector(".menubar__toggle");
+      var picker = document.getElementById("picker");
+      var query = document.getElementById("picker-query");
+      var list = document.querySelector("[data-picker-list]");
+      var tag = document.querySelector("[data-picker-tag]");
+      var pickerStatus = picker.querySelector("[data-picker-status]");
+      var scopeButtons = picker.querySelectorAll("[data-scope]");
+
+      function el(tag, cls, text) {
+        var node = document.createElement(tag);
+        if (cls) node.className = cls;
+        if (text != null) node.textContent = text;
+        return node;
+      }
+
+      function renderMenubar() {
+        bar.textContent = "";
+        if (!enabled.length) {
+          var globe = el("span", null, "🌐");
+          globe.appendChild(el("span", "sr-only", "No clocks"));
+          bar.appendChild(globe);
+        }
+        enabled.forEach(function (tz) {
+          var info = zoneInfo[tz];
+          var item = el("span");
+          item.dataset.tz = tz;
+          var flag = el("span", "flag", info.flag);
+          flag.setAttribute("aria-hidden", "true");
+          item.appendChild(flag);
+          item.appendChild(el("span", "sr-only", info.label + " "));
+          item.appendChild(el("time"));
+          bar.appendChild(item);
+        });
+        tick();
+      }
+
+      function isOn(tz) { return enabled.indexOf(tz) !== -1; }
+      function atLimit() { return enabled.length >= MAX_ZONES; }
+
+      function toggleZone(tz) {
+        if (isOn(tz)) {
+          enabled.splice(enabled.indexOf(tz), 1);
+        } else if (atLimit()) {
+          nudgeLimit();
+          return;
+        } else {
+          enabled.push(tz);
+        }
+        renderMenubar();
+        renderList();
+      }
+
+      function switchRow(tz, cls, label) {
+        var row = el("button", "picker__row" + (cls ? " " + cls : ""));
+        row.type = "button";
+        row.setAttribute("role", "switch");
+        row.setAttribute("aria-checked", String(isOn(tz)));
+        if (!isOn(tz) && atLimit()) {
+          row.setAttribute("aria-disabled", "true");
+          row.title = "Demo limit reached";
+        }
+        row.dataset.toggle = tz;
+        return row;
+      }
+
+      function renderList() {
+        var q = query.value.trim().toLowerCase();
+        var focusedKey = document.activeElement && list.contains(document.activeElement)
+          ? (document.activeElement.dataset.toggle || document.activeElement.dataset.expand) : null;
+        list.textContent = "";
+
+        var rows = CATALOG.map(function (c) {
+          var match = !q || c.name.toLowerCase().indexOf(q) !== -1;
+          var zones = c.zones.filter(function (z) {
+            return (match || z[1].toLowerCase().indexOf(q) !== -1 || z[0].toLowerCase().indexOf(q) !== -1)
+              && (scope === "all" || isOn(z[0]));
+          });
+          return { country: c, zones: zones };
+        }).filter(function (r) { return r.zones.length; });
+
+        if (!rows.length) {
+          list.appendChild(el("p", "picker__empty", "No matches"));
+        }
+
+        rows.forEach(function (r) {
+          var c = r.country;
+          var flag = el("span", "flag", c.flag);
+          flag.setAttribute("aria-hidden", "true");
+
+          if (c.zones.length === 1) {
+            var row = switchRow(c.zones[0][0]);
+            row.appendChild(flag);
+            row.appendChild(el("span", "name", c.name));
+            row.appendChild(el("span", "picker__switch"));
+            list.appendChild(row);
+            return;
+          }
+
+          var expanded = expandedISO === c.iso || !!q || scope === "enabled";
+          var head = el("button", "picker__row");
+          head.type = "button";
+          head.setAttribute("aria-expanded", String(expanded));
+          head.dataset.expand = c.iso;
+          head.appendChild(flag);
+          head.appendChild(el("span", "name", c.name));
+          var chev = el("span", "picker__chevron", "›");
+          chev.setAttribute("aria-hidden", "true");
+          head.appendChild(chev);
+          list.appendChild(head);
+
+          if (!expanded) return;
+          r.zones.forEach(function (z) {
+            var time = "";
+            try { time = formatter(z[0]).format(new Date()); } catch (e) {}
+            var zr = switchRow(z[0], "picker__row--zone");
+            zr.appendChild(el("span", "name", z[1] + " (" + time + ")"));
+            var check = el("span", "picker__check", "✓");
+            check.setAttribute("aria-hidden", "true");
+            zr.appendChild(check);
+            list.appendChild(zr);
+          });
+        });
+
+        if (focusedKey) {
+          var again = list.querySelector('[data-toggle="' + focusedKey + '"], [data-expand="' + focusedKey + '"]');
+          if (again) again.focus();
+        }
+      }
+
+      function nudgeLimit() {
+        tag.classList.add("is-nudged");
+        pickerStatus.textContent = "Demo limit reached. Remove a zone to add another.";
+        clearTimeout(nudgeTimer);
+        nudgeTimer = setTimeout(function () {
+          tag.classList.remove("is-nudged");
+          pickerStatus.textContent = "";
+        }, 1600);
+      }
+
+      function placeArrow() {
+        var t = toggle.getBoundingClientRect();
+        var p = picker.getBoundingClientRect();
+        var x = Math.min(Math.max(t.left + t.width / 2 - p.left, 18), p.width - 18);
+        picker.style.setProperty("--arrow-x", x + "px");
+      }
+
+      function openPicker() {
+        picker.hidden = false;
+        toggle.setAttribute("aria-expanded", "true");
+        renderList();
+        placeArrow();
+        query.focus();
+      }
+
+      function closePicker(restoreFocus) {
+        if (picker.hidden) return;
+        picker.hidden = true;
+        toggle.setAttribute("aria-expanded", "false");
+        if (restoreFocus) toggle.focus();
+      }
+
+      toggle.addEventListener("click", function () {
+        if (picker.hidden) openPicker(); else closePicker(false);
+      });
+      document.querySelectorAll("[data-open-picker]").forEach(function (b) {
+        b.addEventListener("click", function (e) {
+          e.stopPropagation();
+          if (picker.hidden) openPicker();
+        });
+      });
+
+      list.addEventListener("click", function (e) {
+        var row = e.target.closest("button");
+        if (!row) return;
+        if (row.dataset.toggle) toggleZone(row.dataset.toggle);
+        else if (row.dataset.expand) {
+          expandedISO = expandedISO === row.dataset.expand ? null : row.dataset.expand;
+          renderList();
+        }
+      });
+
+      query.addEventListener("input", renderList);
+
+      scopeButtons.forEach(function (b) {
+        b.addEventListener("click", function () {
+          scope = b.dataset.scope;
+          scopeButtons.forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+          renderList();
+        });
+      });
+
+      document.addEventListener("pointerdown", function (e) {
+        if (picker.hidden || picker.contains(e.target) || toggle.contains(e.target)) return;
+        closePicker(false);
+      });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && !picker.hidden) closePicker(true);
+      });
+      picker.addEventListener("focusout", function (e) {
+        if (e.relatedTarget && !picker.contains(e.relatedTarget) && e.relatedTarget !== toggle) closePicker(false);
+      });
+      window.addEventListener("resize", function () { if (!picker.hidden) placeArrow(); });
+
+      renderMenubar();
+
       tick();
       setTimeout(function () { tick(); setInterval(tick, 30000); }, (60 - new Date().getSeconds()) * 1000);
 
