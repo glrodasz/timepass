@@ -169,7 +169,10 @@
         overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
       }
       .menubar__zones > span:nth-child(n+3) { display: none; }
+      .try-hint { display: none; }
     }
+    .menubar__toggle:disabled { cursor: default; }
+    .menubar__toggle:disabled:hover { background: none; box-shadow: none; }
 
     /* ---------- Picker demo (mirrors the app's popover) ---------- */
     .picker {
@@ -1056,13 +1059,22 @@
         if (restoreFocus) toggle.focus();
       }
 
+      // Only two clocks fit on phones, so the demo is disabled there.
+      var mobile = window.matchMedia("(max-width: 520px)");
+      function syncMobile() {
+        if (mobile.matches) closePicker(false);
+        toggle.disabled = mobile.matches;
+      }
+      syncMobile();
+      mobile.addEventListener("change", syncMobile);
+
       toggle.addEventListener("click", function () {
         if (picker.hidden) openPicker(); else closePicker(false);
       });
       document.querySelectorAll("[data-open-picker]").forEach(function (b) {
         b.addEventListener("click", function (e) {
           e.stopPropagation();
-          if (picker.hidden) openPicker();
+          if (picker.hidden && !toggle.disabled) openPicker();
         });
       });
 
