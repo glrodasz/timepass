@@ -1076,6 +1076,7 @@
       scopeButtons.forEach(function (b) {
         b.addEventListener("click", function () {
           scope = b.dataset.scope;
+          if (scope === "enabled") query.value = "";
           scopeButtons.forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
           renderList();
         });

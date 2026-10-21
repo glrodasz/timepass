@@ -191,6 +191,9 @@ struct TimeZonePickerView: View {
             }
             .pickerStyle(.segmented)
             .frame(width: 140)
+            .onChange(of: scope) { newScope in
+                if newScope == .enabled { query = "" }
+            }
         }
     }
 }
