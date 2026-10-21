@@ -246,8 +246,15 @@
     [aria-expanded="true"] > .picker__chevron { transform: rotate(90deg); }
     .picker__row--zone { padding-left: 36px; font-size: 12.5px; color: #a9a196; min-height: 28px; }
     .picker__row--zone[aria-checked="true"] { color: var(--picker-accent); }
-    .picker__check { flex: none; width: 12px; visibility: hidden; }
-    .picker__row--zone[aria-checked="true"] .picker__check { visibility: visible; }
+    .picker__check {
+      flex: none; width: 12px; height: 12px; box-sizing: border-box;
+      border: 1.5px solid #8a8278; border-radius: 3px;
+      display: grid; place-items: center;
+      font-size: 9px; font-weight: 700; line-height: 1; color: transparent;
+    }
+    .picker__row--zone[aria-checked="true"] .picker__check {
+      background: var(--picker-accent); border-color: var(--picker-accent); color: #fff;
+    }
     .picker__empty { margin: 0; padding: 14px 12px; color: #a9a196; }
     .picker__footer {
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
