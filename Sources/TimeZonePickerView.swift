@@ -26,7 +26,7 @@ struct TimeZonePickerView: View {
         case .enabled:
             return base.compactMap { country in
                 let kept = country.zones.filter { zones.isEnabled($0) }
-                return kept.isEmpty ? nil : CountryEntry(iso: country.iso, zones: kept)
+                return kept.isEmpty ? nil : country.narrowed(to: kept)
             }
         }
     }
@@ -98,10 +98,10 @@ struct TimeZonePickerView: View {
 
     @ViewBuilder
     private func countrySection(_ country: CountryEntry) -> some View {
-        let isExpanded = expandedISO == country.iso || country.zones.count == 1 || !query.isEmpty
+        let isExpanded = expandedISO == country.iso || country.isSingleZone || !query.isEmpty
 
         Button {
-            if country.zones.count == 1 {
+            if country.isSingleZone {
                 zones.toggle(country.zones[0])
             } else if expandedISO == country.iso {
                 expandedISO = nil
@@ -114,7 +114,7 @@ struct TimeZonePickerView: View {
                 Text(country.localizedName)
                     .foregroundStyle(.primary)
                 Spacer()
-                if country.zones.count == 1 {
+                if country.isSingleZone {
                     Toggle("", isOn: Binding(
                         get: { zones.isEnabled(country.zones[0]) },
                         set: { _ in zones.toggle(country.zones[0]) }
@@ -134,7 +134,7 @@ struct TimeZonePickerView: View {
         }
         .buttonStyle(.plain)
 
-        if isExpanded && country.zones.count > 1 {
+        if isExpanded && !country.isSingleZone {
             ForEach(country.zones, id: \.self) { zone in
                 zoneRow(zone)
             }
@@ -146,22 +146,21 @@ struct TimeZonePickerView: View {
         let opts = ClockFormatOptions(useAMPM: prefs.useAMPM, showDate: false, showDay: false)
         let time = ClockFormatter.format(.now, in: tz, options: opts)
         let pretty = identifier.replacingOccurrences(of: "_", with: " ")
+        let enabled = zones.isEnabled(identifier)
 
         return Button {
             zones.toggle(identifier)
         } label: {
             HStack {
                 // Accent-colored text washes out on the translucent popover;
-                // selection reads through weight and the checkmark instead.
+                // selection reads through weight and the checkbox instead.
                 Text("\(pretty) (\(time))")
-                    .foregroundStyle(zones.isEnabled(identifier) ? .primary : .secondary)
-                    .font(.system(size: 12, weight: zones.isEnabled(identifier) ? .semibold : .regular))
+                    .foregroundStyle(enabled ? .primary : .secondary)
+                    .font(.system(size: 12, weight: enabled ? .semibold : .regular))
                 Spacer()
-                if zones.isEnabled(identifier) {
-                    Image(systemName: "checkmark")
-                        .foregroundStyle(Color.accentColor)
-                        .font(.caption.weight(.bold))
-                }
+                Image(systemName: enabled ? "checkmark.square.fill" : "square")
+                    .foregroundStyle(enabled ? Color.accentColor : Color.secondary)
+                    .font(.system(size: 13))
             }
             .padding(.leading, 36)
             .padding(.trailing, 12)

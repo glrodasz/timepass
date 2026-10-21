@@ -3,7 +3,24 @@ import Foundation
 struct CountryEntry: Identifiable, Hashable {
     let iso: String
     let zones: [String]
+    /// Whether the country itself has one zone, as opposed to a search or
+    /// scope filter narrowing a multi-zone country down to one.
+    let isSingleZone: Bool
     var id: String { iso }
+
+    init(iso: String, zones: [String]) {
+        self.init(iso: iso, zones: zones, isSingleZone: zones.count == 1)
+    }
+
+    private init(iso: String, zones: [String], isSingleZone: Bool) {
+        self.iso = iso
+        self.zones = zones
+        self.isSingleZone = isSingleZone
+    }
+
+    func narrowed(to zones: [String]) -> CountryEntry {
+        CountryEntry(iso: iso, zones: zones, isSingleZone: isSingleZone)
+    }
 
     var localizedName: String {
         Locale.current.localizedString(forRegionCode: iso) ?? iso
@@ -75,7 +92,7 @@ final class TimeZoneCatalog {
                 return entry.country
             }
             let hits = entry.zones.filter { match(tokens, $0.words) }.map { $0.identifier }
-            return hits.isEmpty ? nil : CountryEntry(iso: entry.country.iso, zones: hits)
+            return hits.isEmpty ? nil : entry.country.narrowed(to: hits)
         }
     }
 
