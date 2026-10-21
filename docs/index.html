@@ -169,7 +169,10 @@
         overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
       }
       .menubar__zones > span:nth-child(n+3) { display: none; }
+      .try-hint { display: none; }
     }
+    .menubar__toggle:disabled { cursor: default; }
+    .menubar__toggle:disabled:hover { background: none; box-shadow: none; }
 
     /* ---------- Picker demo (mirrors the app's popover) ---------- */
     .picker {
@@ -1029,10 +1032,15 @@
         }, 1600);
       }
 
-      function placeArrow() {
+      function placePicker() {
+        var header = picker.offsetParent.getBoundingClientRect();
         var t = toggle.getBoundingClientRect();
-        var p = picker.getBoundingClientRect();
-        var x = Math.min(Math.max(t.left + t.width / 2 - p.left, 18), p.width - 18);
+        var w = picker.offsetWidth;
+        var center = t.left + t.width / 2 - header.left;
+        var left = Math.min(Math.max(center - w / 2, 12), header.width - w - 12);
+        picker.style.left = left + "px";
+        picker.style.right = "auto";
+        var x = Math.min(Math.max(center - left, 18), w - 18);
         picker.style.setProperty("--arrow-x", x + "px");
       }
 
@@ -1040,7 +1048,7 @@
         picker.hidden = false;
         toggle.setAttribute("aria-expanded", "true");
         renderList();
-        placeArrow();
+        placePicker();
         query.focus();
       }
 
@@ -1051,13 +1059,22 @@
         if (restoreFocus) toggle.focus();
       }
 
+      // Only two clocks fit on phones, so the demo is disabled there.
+      var mobile = window.matchMedia("(max-width: 520px)");
+      function syncMobile() {
+        if (mobile.matches) closePicker(false);
+        toggle.disabled = mobile.matches;
+      }
+      syncMobile();
+      mobile.addEventListener("change", syncMobile);
+
       toggle.addEventListener("click", function () {
         if (picker.hidden) openPicker(); else closePicker(false);
       });
       document.querySelectorAll("[data-open-picker]").forEach(function (b) {
         b.addEventListener("click", function (e) {
           e.stopPropagation();
-          if (picker.hidden) openPicker();
+          if (picker.hidden && !toggle.disabled) openPicker();
         });
       });
 
@@ -1091,7 +1108,7 @@
       picker.addEventListener("focusout", function (e) {
         if (e.relatedTarget && !picker.contains(e.relatedTarget) && e.relatedTarget !== toggle) closePicker(false);
       });
-      window.addEventListener("resize", function () { if (!picker.hidden) placeArrow(); });
+      window.addEventListener("resize", function () { if (!picker.hidden) placePicker(); });
 
       renderMenubar();
 
