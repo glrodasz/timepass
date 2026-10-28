@@ -391,29 +391,23 @@
     }
     .btn--ghost {
       color: var(--gold-300);
-      border: 1px solid rgba(217,189,132,0.35);
-      background: linear-gradient(180deg, rgba(255,240,210,0.06), rgba(0,0,0,0.12));
-      box-shadow: inset 0 1px 0 rgba(255,240,210,0.08), 0 2px 0 rgba(0,0,0,0.5);
+      border: 1px solid rgba(217,189,132,0.6);
+      background: linear-gradient(180deg, rgba(255,240,210,0.1), rgba(0,0,0,0.12));
+      box-shadow: inset 0 1px 0 rgba(255,240,210,0.12), 0 2px 0 rgba(0,0,0,0.5);
     }
-    .btn--ghost:hover { border-color: rgba(217,189,132,0.6); color: var(--parchment-100); }
+    .btn--ghost:hover { border-color: var(--gold-400); color: var(--parchment-100); }
     .btn--ghost:active { transform: translateY(2px); }
 
     .chips { display: flex; flex-wrap: wrap; gap: 12px; list-style: none; padding: 0; margin: 28px 0 0; }
     .chips li {
       display: inline-flex; align-items: center; gap: 7px;
       padding: 7px 16px; border-radius: 999px;
-      font-size: 14.5px; color: var(--parchment-200);
-      border: 1px solid rgba(201,168,106,0.38);
-      background: linear-gradient(180deg, rgba(255,235,200,0.06), rgba(0,0,0,0.18));
-      box-shadow: inset 0 1px 0 rgba(255,240,210,0.07), 0 1px 0 rgba(0,0,0,0.5);
+      font-size: 14.5px; color: var(--text-muted);
+      border: 1px solid rgba(201,168,106,0.2);
+      background: rgba(255,235,200,0.025);
     }
     .chips svg { width: 15px; height: 15px; flex: none; color: var(--gold-400); }
     .chip__short { display: none; }
-    @media (min-width: 901px) {
-      .chips { flex-wrap: nowrap; gap: 8px; }
-      .chips li { gap: 6px; padding: 6px 12px; font-size: 13.5px; white-space: nowrap; }
-      .chips svg { width: 14px; height: 14px; }
-    }
     @media (min-width: 901px) and (max-width: 1099px) {
       .chip__long { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
       .chip__short { display: inline; }
@@ -458,6 +452,15 @@
     }
     .tagline em { display: block; color: var(--gold-500); font-weight: 700; }
     .hero__actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+    /* Desktop: CTAs split the row in halves, chips in thirds, both the same width. */
+    @media (min-width: 601px) {
+      .hero__actions, .chips { max-width: 540px; }
+      .hero__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .hero__actions .btn { justify-content: center; white-space: nowrap; padding-left: 12px; padding-right: 12px; }
+      .chips { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+      .chips li { justify-content: center; gap: 6px; padding: 6px 8px; font-size: 13px; white-space: nowrap; }
+      .chips svg { width: 14px; height: 14px; }
+    }
     @media (max-width: 600px) {
       .hero__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
       .hero__actions .btn { justify-content: center; padding: 12px 8px; font-size: 13.5px; white-space: nowrap; gap: 7px; }
@@ -692,6 +695,7 @@
       visibility: visible; opacity: 1; transform: none;
       transition: opacity 120ms ease, transform 120ms ease, visibility 0s;
     }
+    .credit__tip-line { display: block; margin-top: 6px; }
     .footer__credit .credit__tip.is-dismissed { visibility: hidden; opacity: 0; }
     @media (prefers-reduced-motion: reduce) { .credit__tip { transition: none; transform: none; } }
     @media (max-width: 600px) {
@@ -891,7 +895,7 @@
               <ul>
                 <li>macOS 13.0 (Ventura) or later</li>
                 <li>Full <strong>Xcode 15+</strong> (Command Line Tools alone aren't enough)</li>
-                <li><a href="https://github.com/yonaskolb/XcodeGen">XcodeGen</a> via Homebrew</li>
+                <li><a href="https://github.com/yonaskolb/XcodeGen" target="_blank" rel="noopener">XcodeGen</a> via Homebrew</li>
                 <li>First launch: right-click the app and choose <strong>Open</strong> to approve the unsigned build.</li>
               </ul>
             </div>
@@ -917,11 +921,11 @@
     </div>
     <div class="wrap">
       <p class="footer__credit">
-        Inspired by <a href="https://www.flagtimes.com/">Flagtimes</a> made by <a href="https://x.com/reimertz">Piérre Reimertz</a>
+        Inspired by <a href="https://www.flagtimes.com/" target="_blank" rel="noopener">Flagtimes</a> made by <a href="https://x.com/reimertz" target="_blank" rel="noopener">Piérre Reimertz</a>
         <button class="credit__info" type="button" aria-label="Why Timepass exists" aria-describedby="credit-tip">
           <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="4.8" r="0.95" fill="currentColor"/><path d="M8 7.2v4.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         </button>
-        <span class="credit__tip" id="credit-tip" role="tooltip">Flagtimes runs on Apple silicon Macs only through Rosetta 2, which Apple is retiring after macOS 27. I built Timepass as a native alternative that keeps working.</span>
+        <span class="credit__tip" id="credit-tip" role="tooltip">Flagtimes runs on Apple silicon Macs only through Rosetta 2, which Apple is retiring after macOS 27.<span class="credit__tip-line">I built Timepass as a native alternative that keeps working.</span></span>
       </p>
     </div>
   </footer>
