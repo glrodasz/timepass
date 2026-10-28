@@ -669,13 +669,14 @@
       position: relative; margin: 24px 0 0; padding-top: 18px;
       border-top: 1px solid rgba(201,168,106,0.12);
       font-size: 13.5px; line-height: 1.5;
+      color: rgba(181,164,135,0.75);
     }
-    .footer__credit a { white-space: nowrap; color: var(--gold-400); text-decoration: underline; text-decoration-color: rgba(217,189,132,0.45); text-underline-offset: 3px; }
+    .footer__credit a { white-space: nowrap; color: rgba(217,189,132,0.72); text-decoration: underline; text-decoration-color: rgba(217,189,132,0.3); text-underline-offset: 3px; }
     .footer__credit a:hover { color: var(--gold-300); text-decoration-color: currentColor; }
     .credit__info {
       display: inline-flex; align-items: center; justify-content: center;
       width: 24px; height: 24px; margin-left: 4px; padding: 0; vertical-align: middle;
-      border: 0; border-radius: 50%; background: none; color: var(--gold-400); cursor: pointer;
+      border: 0; border-radius: 50%; background: none; color: rgba(217,189,132,0.72); cursor: pointer;
     }
     .credit__info:hover { color: var(--gold-300); }
     .credit__info svg { width: 16px; height: 16px; }
@@ -706,12 +707,12 @@
       .footer__row > .footer__copy { display: none; }
       /* Bottom row: copyright left, credit right; the tooltip anchors to the whole row. */
       .footer__bottom {
-        position: relative; display: flex; justify-content: space-between; align-items: center; gap: 12px;
+        position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
         margin-top: 24px; padding-top: 18px; border-top: 1px solid rgba(201,168,106,0.12);
       }
       .footer__copy--mobile { display: block; margin: 0; font-size: 12.5px; white-space: nowrap; }
-      .footer__credit { position: static; margin: 0; padding: 0; border: 0; text-align: right; font-size: 12.5px; }
-      .credit__info { width: 22px; height: 22px; margin-left: 2px; }
+      .footer__credit { position: static; margin: 0; padding: 0; border: 0; text-align: left; font-size: 12.5px; }
+      .credit__info { width: 22px; height: 22px; margin-left: 0; }
       .credit__tip { right: 0; margin: 0 auto; text-align: left; bottom: calc(100% - 10px); }
     }
     /* Phones: shrink the brand and links so they still share the first row. */
@@ -729,6 +730,7 @@
     }
     @media (max-width: 360px) {
       .footer__brand { font-size: 17px; }
+      .footer__credit { font-size: 11.5px; }
       footer nav { gap: 10px; }
       footer nav a { font-size: 13px; }
     }
