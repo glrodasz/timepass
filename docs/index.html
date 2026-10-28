@@ -651,6 +651,39 @@
     footer nav { display: flex; gap: 22px; }
     footer nav a { color: var(--gold-400); text-decoration: underline; text-decoration-color: rgba(217,189,132,0.45); text-underline-offset: 4px; display: inline-block; padding: 11px 0; }
     footer nav a:hover { color: var(--gold-300); text-decoration-color: currentColor; }
+    .footer__credit {
+      position: relative; margin: 24px 0 0; padding-top: 18px;
+      border-top: 1px solid rgba(201,168,106,0.12);
+      font-size: 13.5px; line-height: 1.5;
+    }
+    .footer__credit a { color: var(--gold-400); text-decoration: underline; text-decoration-color: rgba(217,189,132,0.45); text-underline-offset: 3px; }
+    .footer__credit a:hover { color: var(--gold-300); text-decoration-color: currentColor; }
+    .credit__info {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 24px; height: 24px; margin-left: 4px; padding: 0; vertical-align: middle;
+      border: 0; border-radius: 50%; background: none; color: var(--gold-400); cursor: pointer;
+    }
+    .credit__info:hover { color: var(--gold-300); }
+    .credit__info svg { width: 16px; height: 16px; }
+    .credit__tip {
+      position: absolute; left: 0; bottom: calc(100% + 6px); z-index: 10;
+      width: min(360px, 100%); padding: 12px 14px;
+      background: var(--leather-600); color: var(--parchment-100);
+      border: 1px solid rgba(201,168,106,0.35); border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+      font-size: 14px; line-height: 1.5;
+      visibility: hidden; opacity: 0; transform: translateY(4px);
+      transition: opacity 120ms ease, transform 120ms ease, visibility 0s linear 120ms;
+    }
+    .credit__info:hover ~ .credit__tip,
+    .credit__info:focus-visible ~ .credit__tip,
+    .credit__tip:hover,
+    .credit__tip.is-open {
+      visibility: visible; opacity: 1; transform: none;
+      transition: opacity 120ms ease, transform 120ms ease, visibility 0s;
+    }
+    .footer__credit .credit__tip.is-dismissed { visibility: hidden; opacity: 0; }
+    @media (prefers-reduced-motion: reduce) { .credit__tip { transition: none; transform: none; } }
     @media (max-width: 600px) {
       .footer__row {
         display: grid; grid-template-columns: auto auto; justify-content: space-between;
@@ -869,6 +902,15 @@
         <a href="#install">Install</a>
       </nav>
       <div>© 2026 Guillermo Rodas</div>
+    </div>
+    <div class="wrap">
+      <p class="footer__credit">
+        Inspired by <a href="https://www.flagtimes.com/">Flagtimes</a> made by <a href="https://x.com/reimertz">Piérre Reimertz</a>
+        <button class="credit__info" type="button" aria-label="Why Timepass exists" aria-describedby="credit-tip">
+          <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8" cy="4.8" r="0.95" fill="currentColor"/><path d="M8 7.2v4.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <span class="credit__tip" id="credit-tip" role="tooltip">Flagtimes runs on Apple silicon Macs only through Rosetta 2, which Apple is retiring after macOS 27. I built Timepass as a native alternative that keeps working.</span>
+      </p>
     </div>
   </footer>
 
@@ -1145,6 +1187,26 @@
         if (picker.hidden || picker.contains(e.target) || toggle.contains(e.target)) return;
         closePicker(false);
       });
+
+      var creditInfo = document.querySelector(".credit__info");
+      var creditTip = document.getElementById("credit-tip");
+      if (creditInfo && creditTip) {
+        // Hover and keyboard focus show the tooltip via CSS; a click or tap pins it open for touch screens.
+        creditInfo.addEventListener("click", function () {
+          creditTip.classList.remove("is-dismissed");
+          creditTip.classList.toggle("is-open");
+        });
+        function resetCreditTip() { creditTip.classList.remove("is-dismissed"); }
+        creditInfo.addEventListener("blur", function () { creditTip.classList.remove("is-open"); resetCreditTip(); });
+        creditInfo.addEventListener("mouseleave", resetCreditTip);
+        document.addEventListener("click", function (e) {
+          if (!creditInfo.contains(e.target) && !creditTip.contains(e.target)) creditTip.classList.remove("is-open");
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") { creditTip.classList.remove("is-open"); creditTip.classList.add("is-dismissed"); }
+        });
+      }
+
       document.addEventListener("keydown", function (e) {
         if (e.key === "Escape" && !picker.hidden) closePicker(true);
       });
