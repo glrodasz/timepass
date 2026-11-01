@@ -4,6 +4,7 @@
 
 **Every timezone you care about, with its flag and local time, in your Mac's menu bar. Native on Apple Silicon.**
 
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![macOS 13+](https://img.shields.io/badge/macOS-13%2B%20Ventura-000000.svg?logo=apple)
 ![Apple Silicon native](https://img.shields.io/badge/Apple%20Silicon-native-1F2328.svg)
 ![Swift 5.9](https://img.shields.io/badge/Swift-5.9-F05138.svg?logo=swift&logoColor=white)
@@ -175,6 +176,6 @@ Validate with `make build` (or `make install && make run` to try it), and mentio
 
 ## License
 
-© 2026 Guillermo Rodas. All rights reserved.
+[MIT](LICENSE) © 2026 Guillermo Rodas.
 
 Inspired by [Flagtimes](https://www.flagtimes.com/) by [Piérre Reimertz](https://x.com/reimertz). Timezone data comes from the IANA tz database bundled with macOS; flags are Unicode emoji.
