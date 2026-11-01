@@ -11,7 +11,7 @@ INSTALL_DIR := /Applications
 .PHONY: help generate build install run catalog clean
 
 help:
-	@echo "FlagTimes targets:"
+	@echo "Timepass targets:"
 	@echo "  make generate  - regenerate $(PROJECT) from project.yml (xcodegen)"
 	@echo "  make build     - $(CONFIG) build into $(DERIVED)"
 	@echo "  make install   - build and copy $(APP_NAME) into $(INSTALL_DIR)"
