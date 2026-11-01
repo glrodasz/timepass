@@ -13,10 +13,7 @@
 
 [**Website**](https://timepass.guillermorodas.com/) · [Build from source](#quick-start) · [How it works](#how-it-works) · [Architecture](#architecture) · [Contributing](#contributing)
 
-<!-- TODO(owner): add a real screenshot of Timepass in use and uncomment the line below.
-     Capture: the macOS menu bar with 3–4 Timepass clocks (flag + time) and the popover open under it,
-     showing the search field, a multi-zone country expanded with some zones checked, and the All/Enabled
-     control. Save it as .github/readme/menu-bar.png (retina, cropped to the menu bar + popover).
+<!-- Screenshot slot: add .github/readme/menu-bar.png, then uncomment.
 <img src=".github/readme/menu-bar.png" alt="Timepass in the macOS menu bar: flag and time clocks for several cities, with the timezone picker popover open below" width="860">
 -->
 
@@ -96,7 +93,7 @@ open Timepass.xcodeproj       # ⌘R in Xcode
 
 ### macOS 26 notes
 
-One non-obvious workaround lives in this project, documented in the code next to where it's applied; this section explains the why.
+macOS 26 changed how status items are placed, and Timepass works around it in two ways.
 
 **The status item carries an empty 1×1 image** (`AppDelegate.applicationDidFinishLaunching`). On macOS 26, title-only `NSStatusItem`s are sometimes placed inside the system-icons slot (right of the Control Center pill) instead of the third-party status zone, where they render invisibly behind battery/wifi/clock. Setting an image — even a transparent one — anchors the item in the correct zone.
 
@@ -106,7 +103,7 @@ If the menu bar icon ever vanishes after a clean reinstall, a stuck Control Cent
 
 ## Architecture
 
-The whole system is one small app talking only to macOS: who uses it, and which parts of the OS it relies on.
+Timepass is one small app that talks only to macOS.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/readme/diagrams/context-dark.svg">
@@ -114,8 +111,6 @@ The whole system is one small app talking only to macOS: who uses it, and which 
 </picture>
 
 Everything outside the amber box is macOS itself; Timepass has no server, account or network dependency. The zone list is a JSON catalog generated from `/usr/share/zoneinfo/zone.tab` at build time and bundled with the app, while the current offset of each zone (including daylight saving) is computed at runtime by the system's `TimeZone`.
-
-A menu bar app this size needs no deeper diagrams. The diagram source lives in [`.github/readme/diagrams/src/`](.github/readme/diagrams/src/), kept out of `docs/` because that folder is the published website.
 
 **Tech stack:** Swift 5.9 · AppKit (`NSStatusItem`, `NSPopover`) · SwiftUI · Combine · ServiceManagement (`SMAppService`) · XcodeGen + Make · static HTML landing page on GitHub Pages.
 
@@ -160,7 +155,7 @@ make catalog    # same as ./Scripts/generate_catalog.sh
 
 ### Landing page
 
-The project website is a single static page in `docs/` (no build step). Preview it locally with `python3 -m http.server -d docs`, and publish it via **Settings → Pages → Deploy from a branch → `main` / `/docs`**. The custom domain `timepass.guillermorodas.com` is set by `docs/CNAME` and needs a DNS `CNAME` record `timepass` → `glrodasz.github.io`. README-only images live in `.github/readme/` so they aren't published with the site.
+The project website is a single static page in `docs/` (no build step). Preview it locally with `python3 -m http.server -d docs`, and publish it via **Settings → Pages → Deploy from a branch → `main` / `/docs`**. The custom domain `timepass.guillermorodas.com` is set by `docs/CNAME` and needs a DNS `CNAME` record `timepass` → `glrodasz.github.io`.
 
 ## Documentation
 
@@ -179,10 +174,10 @@ Issues and pull requests are welcome. The common changes:
 - **A search alias** (like `uk` for the United Kingdom) goes in the `aliases` table in `Sources/TimeZoneCatalog.swift`.
 - **Anything else**: keep the app pure AppKit at the entry point (no SwiftUI `App` scene, see [macOS 26 notes](#macos-26-notes)).
 
-Validate with `make build` (or `make install && make run` to try it). There is no CI yet, so please mention in the PR which macOS version you tested on.
+Validate with `make build` (or `make install && make run` to try it), and mention in the PR which macOS version you tested on.
 
 ## License
 
-No license file has been added to this repository yet, so all rights are reserved by the author (© 2026 Guillermo Rodas) until one is.
+© 2026 Guillermo Rodas. All rights reserved.
 
 Inspired by [Flagtimes](https://www.flagtimes.com/) by [Piérre Reimertz](https://x.com/reimertz). Timezone data comes from the IANA tz database bundled with macOS; flags are Unicode emoji.
