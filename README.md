@@ -13,9 +13,7 @@
 
 [**Website**](https://timepass.guillermorodas.com/) · [Build from source](#quick-start) · [How it works](#how-it-works) · [Architecture](#architecture) · [Contributing](#contributing)
 
-<!-- Screenshot slot: add .github/readme/menu-bar.png, then uncomment.
-<img src=".github/readme/menu-bar.png" alt="Timepass in the macOS menu bar: flag and time clocks for several cities, with the timezone picker popover open below" width="860">
--->
+<img src="docs/assets/og-image.png" alt="Timepass: the whole world, one glance away. Every timezone you care about, with its flag and local time, living quietly in your menu bar." width="860">
 
 *The whole world, one glance away.* Native Apple Silicon · Searchable timezones · Starts at login.
 
@@ -25,7 +23,6 @@ Timepass replaces older world-clock menu bar utilities that never made the jump 
 
 It's for anyone who works across timezones and wants the answer in the menu bar: add as many zones as you like, each shown as its country flag and local time. No windows to open, no Dock icon. It's not a calendar, a meeting planner or a timezone converter: it shows the time, and that's it.
 
-<img src="images/app-store/timepass-cover-1440x900.png" alt="Timepass banner: the app icon next to the tagline 'The whole world, one glance away.' and the chips Native Apple Silicon, Searchable timezones, Starts at login" width="860">
 
 **Features**
 
